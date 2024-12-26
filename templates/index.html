@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trending Topics</title>
+    <script>
+        async function runScript() {
+            try {
+                const response = await fetch('/run-script');
+                const data = await response.json();
+
+                const timestamp = data.timestamp;
+                const trends = data.trends;
+                const ipAddress = data.ip_address;
+
+                // Display results
+                const resultDiv = document.getElementById('result');
+                let resultHTML = `
+                    <h3>These are the most happening topics as on ${timestamp}:</h3>
+                    <ul>
+                `;
+                trends.forEach((trend, index) => {
+                    resultHTML += `<li>${index + 1}. ${trend}</li>`;
+                });
+                resultHTML += `
+                    </ul>
+                    <p>The IP address used for this query was <strong>${ipAddress}</strong>.</p>
+                    <h4>Here’s a JSON extract of this record from MongoDB:</h4>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    <button onclick="runScript()">Click here to run the query again</button>
+                `;
+                resultDiv.innerHTML = resultHTML;
+            } catch (error) {
+                console.error('Error running script:', error);
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `<p style="color: red;">An error occurred while running the script. Please try again.</p>`;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Trending Topics</h1>
+    <button onclick="runScript()">Click here to run the script</button>
+    <div id="result"></div>
+</body>
+</html>
